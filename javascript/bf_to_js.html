@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainf**k to Javascript</title>
+</head>
+<body>
+
+    <textarea name="bf_code" id="bf_code" cols="30" rows="10"></textarea>
+    <br>
+    <button onclick="parseBf()">Convert</button>
+    <br>
+
+    <div id="output_code">
+
+    </div>
+
+    <script>
+
+        const output_element = document.getElementById('output_code');
+
+        const equivalent_code = {
+            '>': 'ptr += 1;',
+            '<': 'ptr -= 1;',
+            '+': 'memory[ptr] += 1;',
+            '-': 'memory[ptr] -= 1;',
+            '.': 'printToScreen(memory[ptr]);',
+            ',': 'memory[ptr] = getNextChar();',
+            '[': 'while (memory[ptr] != 0) {',
+            ']': '}'
+        }
+
+        const allowed_symbols = ['>', '<', '+', '-', '.', ',', '[', ']'];
+
+        function printCode(code) {
+            const node = document.createTextNode(code);
+            output_element.append(node);
+            output_element.append(document.createElement("br"));
+        }
+
+        function printInitialCode() {
+            printCode('<!DOCTYPE html>');
+            printCode('<html lang="en">');
+            printCode('<head>');
+            printCode('<meta charset="UTF-8">');
+            printCode('<meta http-equiv="X-UA-Compatible" content="IE=edge">');
+            printCode('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+            printCode('<title>Brainf**k to Javascript</title>');
+            printCode('</head>');
+            printCode('<body>');
+            printCode('<button onclick="runBf()">Run</button>');
+            printCode('<div id="output_code">');
+            printCode('</div>');
+            printCode('<script>');
+            printCode('const output_element = document.getElementById("output_code");');
+            printCode('let memory = Array(5000).fill(0);');
+            printCode('let ptr = 0;');
+            printCode('let inputs = [];');
+            printCode('function getNextChar() {');
+            printCode('const val = inputs.shift();');
+            printCode('if (!val) {');
+            printCode('const inputed_values = window.prompt("Input required");');
+            printCode('if (inputed_values == null)');
+            printCode('throw new Error("Input cancelled");');
+            printCode('inputs = Array.from(inputed_values);');
+            printCode('return getNextChar();');
+            printCode('} else {');
+            printCode('return val.charCodeAt(0);');
+            printCode('}');
+            printCode('}');
+            printCode('function printToScreen(asciiValue) {');
+            printCode('const charValue = String.fromCharCode(asciiValue);');
+            printCode('const node = document.createTextNode(charValue);');
+            printCode('output_element.append(node);');
+            printCode('}');
+            printCode('function runBf() {'); 
+            printCode('output_element.innerHTML = "";'); 
+        }
+
+        function printFinalCode() {
+            printCode('}');
+            printCode('<\/script>');
+            printCode('</body>');
+            printCode('</html>');
+        }
+
+        function parseBf() {
+            output_element.innerHTML = "";
+
+            printInitialCode();
+
+            const bf_code = document.getElementById("bf_code").value;
+            
+            for (let symbol of bf_code) {
+                if (allowed_symbols.includes(symbol))
+                    printCode(equivalent_code[symbol], output_element);
+            }
+
+            printFinalCode();
+        }
+
+        // built-in functions
+        let memory = Array(5000).fill(0);
+        let ptr = 0;
+
+        let inputs = [];
+        function getNextChar() {
+            const val = inputs.shift();
+
+            if (!val) {
+                const inputed_values = window.prompt("Input required");
+
+                if (inputed_values == null)
+                    throw new Error("Input cancelled");
+
+                inputs = Array.from(inputed_values);
+
+                return getNextChar();
+            } else {
+                return val.charCodeAt(0);
+            }
+        }
+
+        function printToScreen(asciiValue) {
+            const charValue = String.fromCharCode(asciiValue);
+            const node = document.createTextNode(charValue);
+            output_element.append(node);
+        }
+
+        function runBf() {
+            output_element.innerHTML = "";
+            //bf code goes here
+        }
+
+    </script>
+    
+</body>
+</html>
